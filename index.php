@@ -2,16 +2,8 @@
 	header('Content-type: text/html; charset=utf-8');
 	setlocale(LC_TIME, 'en_IN.UTF8');
 	date_default_timezone_set('Asia/Kolkata');
-
-	// CONNECT TO DATABASE
 	
-	/* REGIONS */
-	// $result = mysqli_query($db, 'SELECT id,country,region,meta FROM `holiday_countries` ORDER BY country, region');
-	$regionNames = array();
-	$regionIDs = array();
-	$tArray = array();
 	$allDays = array();
-	$regionMeta = array();
 	
 	/* DATE PREPARATIONS */
 	// http://php.net/manual/en/function.date.php
@@ -20,13 +12,13 @@
 	$requYMD = $today; // makes it first of month
 	$startpage = true;
 	if(isset($_GET['m']))
-    {
+	{
 		$requYMD = preg_replace("/[^0-9\-]/i", '', $_GET['m']).'-01';
 		$startpage = false;
 	}
 	// block hack, required yyyy-mm-dd
 	if(strlen($requYMD)!=10)
-    {
+	{
 		exit();
 	}
 	
@@ -46,26 +38,19 @@
 	}
 	
 	// fill Arrays with data
-	
-		// create all days in month as array entries
-		$d = 1; // id starts with 1, we dont have an id==0
-		while($d <= $num_of_days) {
-			$allDays[$d] = ' ';
-			 echo $d++;
-		}
-	
-	
+	// create all days in month as array entries
+	$d = 1; // id starts with 1, we dont have an id==0
+	while($d <= $num_of_days) {
+		$allDays[$d] = ' ';
+		$d++;
+	}
 	
 	
 	/* OUTPUT function */
 	function getAllHolidays() 
-    {
+	{
 		global $dates;
-		global $regionNames;
-		global $regionIDs; // IDs of all regions
-		global $tArray; // contains all holiday periods for each region
 		global $allDays;
-		global $regionMeta;
 		global $today;
 		global $requYMD;
 		global $curMonthTS;
@@ -74,28 +59,26 @@
 		$allMetas = array();
 		
 		$output = '
-	<table id="table_1" class="bordered">
-	<tr>
-		<th style="text-align:left !important;background:#FFD !important;">
-		<span style="display:none;">Holidays in </span>'.strftime('%B %Y', $curMonthTS).'
-		</th>
-	';
+		<table id="table_1" class="bordered">
+			<tr>
+				<th style="text-align:left !important;background:#FFD !important;">
+					<span style="display:none;">Holidays in </span>'.strftime('%B %Y', $curMonthTS).'
+				</th>';
 		
 		// all number days of current month
 		foreach($dates as $day) {
 			// set id for today to color the column, but only if showing this month
 			$cssToday = '';
 			if($day == $today && substr($today,5,2)==$monthNr) {
-				$cssToday = ' class="today" title="Der heutige Tag!"';
+				$cssToday = ' class="today"';
 			}
 			// format 2013-10-01 to 01 and remove if necessary the 0 by ltrim
 			$output .= '<th'.$cssToday.'>'.ltrim( substr($day,8,2) , '0').'</th>'; // alternative: output $day and let JS convert the day to weekday
 		}
-	$regionTerm = ('$countryCode'=='ch') ? 'Kantone' : 'Bundesländer';
-	$output .= '
-	</tr>
-	
-	<tr class="weekdays"><td><span style="display:none;">'.$regionTerm.'</span></td>';
+		$output .= '
+		</tr>
+
+		<tr class="weekdays"><td><span style="display:none;"></span></td>';
 		$wdaysMonth = array();
 		// week days
 		$i = 1;
@@ -115,42 +98,29 @@
 			$wdaysMonth[$i++] = strftime('%A %e. %B %Y', strtotime($day));
 			$output .= '<td '.$todayWDcss.$wkendcss.' title="'.strftime( '%A %e. %B %Y', strtotime($day) ).'">'.$weekdayName.'</td>';
 		}
-		
-	$hasData = false;
-	$output .= '
-	</tr>
-	';
 
-		
-			
+		$hasData = false;
+		$output .= '</tr>';
 
-			$k = 0;
-			foreach($allDays as $day) 
-            {
-				$k++;
-				if($day=='x') 
-                {
-					$output .= '<td class="free" title="'.$wdaysMonth[$k].'<br />'.$allMetas[$id][$k].'">'.$day.'</td>';
-				}
-				else 
-                {
-					$output .= '<td>'.$day.'</td>';
-				}
+		$k = 0;
+		foreach($allDays as $day) {
+			$k++;
+			if($day=='x') {
+				$output .= '<td class="free" title="'.$wdaysMonth[$k].'<br />'.$allMetas[$id][$k].'">'.$day.'</td>';
 			}
-			$output .= '</tr>
-			';
-		
-		
+			else {
+				$output .= '<td>'.$day.'</td>';
+			}
+		}
+		$output .= '</tr>';
 		$output .= '</table>';
-		
-		
 		return $output;
 	}
 	
 	// $mnthyear = strftime('%b %G', $curMonthTS);
 	$mnthyear = strftime('%b %Y', $curMonthTS);
-	
-?><!DOCTYPE html>
+?>
+<!DOCTYPE html>
 <html>
 <head>
 	<meta charset="utf-8">
@@ -164,8 +134,7 @@
 	<link rel="stylesheet" href="styles.css" type="text/css" />
 	
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-		<script>window.jQuery || document.write('<script src="/js/jquery/3.2.1/jquery.min.js"><\/script>')</script>
-	
+	<script>window.jQuery || document.write('<script src="/js/jquery/3.2.1/jquery.min.js"><\/script>')</script>	
 	<script type="text/javascript" src="script.js"></script>
 
 </head>
@@ -213,15 +182,6 @@
 		</div>
 		
 		<br />
-		<div id="flags">
-			<span style="padding-right:10px;">Anzeigen:</span>
-			<div title="Deutschland" id="setDE" class="germany"></div> 
-			<div title="Österreich" id="setAT" class="austria"></div> 
-			<div title="Schweiz" id="setCH" class="swiss1">
-			<div class="swiss2"></div>
-			</div> 
-		</div>
-
 		<div id="calholdr">
 			<div class="calendar"><?php echo substr($today,8,2); ?><em><?php echo strftime('%b %Y', strtotime($today)); ?></em></div>
 			<div id="clock"></div>
@@ -232,10 +192,10 @@
 	<div id="main">
 	
 		<div class="tabcont t_de">
-			<h1>attendance (<?php echo $mnthyear; ?>)</h1>
+			<h1>Attendance (<?php echo $mnthyear; ?>)</h1>
 			<?php
-				// output holiday table for Germany
-				echo getAllHolidays('de');
+				// output calendar table
+				echo getAllHolidays();
 			?>
 		</div> 
 

@@ -44,10 +44,10 @@ $(document).ready(function()
 		direction: ['2013-01', '2032-12'],
 		format: 'Y-m',
 		lang_clear_date: '', 
-		months: ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
+		months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
 		offset: [20,250], 
 		onSelect: function(view, elements) {
-		   window.location.href = '/holidays/?m='+view;
+		   window.location.href = '/calenda/?m='+view;
 		}
 	});
 	$('#datepickbtn').click(function(e) {
@@ -94,69 +94,6 @@ $(document).ready(function()
 			$('.shlinktxt input').select();
 		}
 	});
-	// open share links in new window
-	$('.shfb,.shgp,.shtw').click( function(e) {
-		e.preventDefault();
-		window.open($(this).attr('href'),'','width=500,height=400');
-	});
-	
-	$('#setDE').click( function() {
-		if( $('.t_de').is(':visible') ) {
-			$('.t_de').hide();
-			$('#setDE').removeClass('germany');
-			$('#setDE').addClass('germany_off');
-		}
-		else {
-			$('.t_de').show();
-			$('#setDE').removeClass('germany_off');
-			$('#setDE').addClass('germany');
-		}
-		// remember choice in cookie
-		if(initdone) {
-			setCookie('holidaycook', calcBinFlag(), 60);
-		}
-	});
-	$('#setCH').click( function() {
-		if( $('.t_ch').is(':visible') ) {
-			$('.t_ch').hide();
-			$('#setCH').removeClass('swiss1');
-			$('#setCH').addClass('swiss1_off');
-		}
-		else {
-			$('.t_ch').show();
-			$('#setCH').removeClass('swiss1_off');
-			$('#setCH').addClass('swiss1');
-		}
-		if(initdone) {
-			setCookie('holidaycook', calcBinFlag(), 60);
-		}
-	});
-	$('#setAT').click( function() {
-		if( $('.t_at').is(':visible') ) {
-			$('.t_at').hide();
-			$('#setAT').removeClass('austria');
-			$('#setAT').addClass('austria_off');
-		}
-		else {
-			$('.t_at').show();
-			$('#setAT').removeClass('austria_off');
-			$('#setAT').addClass('austria');
-		}
-		if(initdone) {
-			setCookie('holidaycook', calcBinFlag(), 60);
-		}
-	});
-
-	$('#changeRegion').click( function() {
-		$('#regionsNav').toggle();
-		if( $('#regionsNav').is(':visible') ) {
-			$('#arrowud').text('▲');
-		}
-		else {
-			$('#arrowud').text('▼');
-		}
-		
-	});
 	
 	// start clock
 	if($('#clock').length>0)
@@ -168,43 +105,8 @@ $(document).ready(function()
 	$('.bordered tr').click( function() {
 		$(this).addClass('tractive').siblings().removeClass('tractive');
 	});
-	
-	/* START up settings, only on main page */
-	if($('.holidaysm').length>0) {
-		var binflag = getCookie('holidayshd');
-		var initdone = false;
-		if(binflag) {
-			if((binflag&1)==1) {
-				$('#setDE').trigger('click');
-			}
-			if((binflag&2)==2) {
-				$('#setCH').trigger('click');
-			}
-			if((binflag&4)==4) {
-				$('#setAT').trigger('click');
-			}
-		}
-		// set variable to true to allow setcookie for click event after startup
-		initdone = true;
-	}
 
 }); // END JQUERY-ready
-
-/* bitly shortener */
-function get_short_url(long_url, func) {
-    $.getJSON(
-        "https://api.bitly.com/v3/shorten?callback=?", 
-        { 
-            "format": "json",
-            "apiKey": 'R_2366f5a978201ae03a4616ba6ddde0bc',
-            "login": 'echteinfachtv',
-            "longUrl": long_url
-        },
-        function(response) {
-            func(response.data.url);
-        }
-    );
-}
 	
 /* simple clock */
 function startTime() {
@@ -214,7 +116,7 @@ function startTime() {
 	var s=today.getSeconds();
 	// add a zero in front of numbers<10
 	m=checkTime(m);
-	document.getElementById('clock').innerHTML=h+':'+m+' Uhr'; //+' ⏰'; // &#x231A;
+	document.getElementById('clock').innerHTML=h+':'+m+' IST';
 	t=setTimeout(function(){startTime()},500);
 }
 function checkTime(i){
@@ -224,14 +126,6 @@ function checkTime(i){
 	return i;
 }
 
-function calcBinFlag() {
-	var fl_de = $('.t_de').is(':visible') ? 0 : 1;
-	var fl_ch = $('.t_ch').is(':visible') ? 0 : 2;
-	var fl_at = $('.t_at').is(':visible') ? 0 : 4;
-	//console.log(fl_de+" & "+fl_ch+" & "+fl_at);
-	//console.log(fl_de | fl_ch | fl_at);
-	return (fl_de|fl_ch|fl_at);
-}
 
 function setCookie(name,value,days) {
 	if (days) {
